@@ -1,0 +1,24 @@
+{
+  "title": "Pusat Bantuan Risev",
+  "pages": [
+    "index",
+    "---",
+    "Panduan Peniaga",
+    "merchant/register",
+    "merchant/dashboard",
+    "merchant/give-stamps",
+    "merchant/rewards",
+    "merchant/marketing",
+    "merchant/customers",
+    "merchant/analytics",
+    "merchant/branches",
+    "merchant/staff",
+    "merchant/profile",
+    "merchant/subscription",
+    "---",
+    "Panduan Pelanggan",
+    "customer/getting-started",
+    "customer/my-cards",
+    "customer/vouchers"
+  ]
+}
