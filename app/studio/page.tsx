@@ -47,11 +47,20 @@ export default function StudioPage() {
   const [selectedDoc, setSelectedDoc] = useState<DocItem | null>(null);
   const [content, setContent] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [langFilter, setLangFilter] = useState<'all' | 'ms' | 'en'>('all');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
   const [saveError, setSaveError] = useState<string>('');
   const [viewMode, setViewMode] = useState<'split' | 'edit' | 'preview'>('split');
+
+  const getLiveUrl = (relativePath?: string) => {
+    if (!relativePath) return '/ms/docs/merchant/unboxing-stand';
+    if (relativePath === 'index.mdx') return '/ms/docs/merchant/unboxing-stand';
+    const isEn = relativePath.endsWith('.en.mdx');
+    const cleanPath = relativePath.replace('.en.mdx', '').replace('.mdx', '');
+    return `/${isEn ? 'en' : 'ms'}/docs/${cleanPath}`;
+  };
   
   // Media Upload State
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -205,12 +214,17 @@ export default function StudioPage() {
   };
 
   // Filter docs
-  const filteredDocs = docs.filter(
-    (d) =>
+  const filteredDocs = docs.filter((d) => {
+    const isEn = d.relativePath.endsWith('.en.mdx');
+    if (langFilter === 'ms' && isEn) return false;
+    if (langFilter === 'en' && !isEn) return false;
+
+    return (
       d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       d.relativePath.toLowerCase().includes(searchQuery.toLowerCase()) ||
       d.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    );
+  });
 
   const categories = Array.from(new Set(docs.map((d) => d.category)));
 
@@ -273,20 +287,20 @@ export default function StudioPage() {
             </button>
           </div>
 
-          {/* Quick Media Upload Button */}
+          {/* Media Upload Button */}
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="flex items-center gap-2 rounded-lg border border-[#3F3F46] bg-[#18181B] px-3.5 py-2 text-xs font-bold text-white hover:border-[#FFC700] hover:bg-[#27272A] transition"
+            className="flex items-center gap-2 rounded-lg border border-[#27272A] bg-[#18181B] px-3.5 py-2 text-xs font-semibold text-white hover:bg-[#27272A] active:scale-95 transition"
           >
             <UploadCloud className="h-4 w-4 text-[#FFC700]" />
-            <span>{isUploading ? 'Uploading...' : 'Upload Gambar / Video'}</span>
+            <span>{isUploading ? 'Memuat naik...' : 'Upload Gambar / Video'}</span>
           </button>
           <input
-            type="file"
             ref={fileInputRef}
-            onChange={(e) => handleFileUpload(e.target.files)}
+            type="file"
             className="hidden"
+            onChange={(e) => handleFileUpload(e.target.files)}
             accept="image/*,video/*"
             multiple
           />
@@ -306,9 +320,9 @@ export default function StudioPage() {
       {/* Main Workspace Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar: Document Explorer */}
-        <aside className="flex w-72 flex-col border-r border-[#27272A] bg-[#0E0E11]">
-          {/* Search bar */}
-          <div className="p-3 border-b border-[#27272A]">
+        <aside className="flex w-80 flex-col border-r border-[#27272A] bg-[#0E0E11]">
+          {/* Search bar & Language Filter */}
+          <div className="p-3 border-b border-[#27272A] space-y-2">
             <div className="flex items-center gap-2 rounded-lg border border-[#27272A] bg-[#18181B] px-3 py-1.5 text-xs text-[#A1A1AA]">
               <Search className="h-3.5 w-3.5" />
               <input
@@ -318,6 +332,34 @@ export default function StudioPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-transparent text-white placeholder-[#52525B] focus:outline-none text-xs"
               />
+            </div>
+
+            {/* Language filter pills */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setLangFilter('all')}
+                className={`flex-1 rounded py-1 text-[10px] font-bold transition ${
+                  langFilter === 'all' ? 'bg-[#27272A] text-white' : 'text-[#71717A] hover:text-white'
+                }`}
+              >
+                Semua
+              </button>
+              <button
+                onClick={() => setLangFilter('ms')}
+                className={`flex-1 rounded py-1 text-[10px] font-bold transition ${
+                  langFilter === 'ms' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'text-[#71717A] hover:text-white'
+                }`}
+              >
+                🇲🇾 Melayu
+              </button>
+              <button
+                onClick={() => setLangFilter('en')}
+                className={`flex-1 rounded py-1 text-[10px] font-bold transition ${
+                  langFilter === 'en' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'text-[#71717A] hover:text-white'
+                }`}
+              >
+                🇬🇧 English
+              </button>
             </div>
           </div>
 
@@ -338,20 +380,26 @@ export default function StudioPage() {
                     </div>
                     {catDocs.map((doc) => {
                       const isSelected = selectedDoc?.relativePath === doc.relativePath;
+                      const isEn = doc.relativePath.endsWith('.en.mdx');
                       return (
                         <button
                           key={doc.relativePath}
                           onClick={() => handleSelectDoc(doc)}
-                          className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs transition ${
+                          className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-xs transition ${
                             isSelected
                               ? 'bg-[#FFC700]/15 text-[#FFC700] font-bold border border-[#FFC700]/30'
                               : 'text-[#D4D4D8] hover:bg-[#18181B] hover:text-white'
                           }`}
                         >
-                          <div className="flex items-center gap-2.5 truncate">
+                          <div className="flex items-center gap-2 truncate flex-1 mr-2">
                             <FileText className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-[#FFC700]' : 'text-[#71717A]'}`} />
                             <span className="truncate">{doc.title}</span>
                           </div>
+                          <span className={`shrink-0 rounded px-1.5 py-0.5 text-[9px] font-extrabold ${
+                            isEn ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                          }`}>
+                            {isEn ? 'EN' : 'BM'}
+                          </span>
                         </button>
                       );
                     })}
@@ -407,6 +455,17 @@ export default function StudioPage() {
               <h2 className="text-sm font-bold text-white truncate max-w-md">
                 {selectedDoc?.title || 'Tiada fail dipilih'}
               </h2>
+              {selectedDoc && (
+                <a
+                  href={getLiveUrl(selectedDoc.relativePath)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1 rounded bg-[#18181B] border border-[#27272A] px-2 py-0.5 text-[11px] font-bold text-cyan-400 hover:bg-cyan-500/10 transition"
+                >
+                  <span>Buka Halaman Live</span>
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              )}
             </div>
 
             {/* Notification messages */}

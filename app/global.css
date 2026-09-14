@@ -2,11 +2,61 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
-html {
-  scrollbar-gutter: stable;
+:root, .dark {
+  --color-fd-background: #090a0f;
+  --color-fd-foreground: #f8fafc;
+  --color-fd-muted: #11141c;
+  --color-fd-muted-foreground: #94a3b8;
+  --color-fd-popover: #0f131a;
+  --color-fd-popover-foreground: #f8fafc;
+  --color-fd-card: #0f131a;
+  --color-fd-card-foreground: #f8fafc;
+  --color-fd-border: rgba(255, 255, 255, 0.08);
+  --color-fd-primary: #06b6d4;
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-secondary: #161b26;
+  --color-fd-secondary-foreground: #f8fafc;
+  --color-fd-accent: #1e293b;
+  --color-fd-accent-foreground: #38bdf8;
+  --color-fd-ring: #06b6d4;
 }
 
-html > body[data-scroll-locked] {
-  margin-right: 0px !important;
-  --removed-body-scroll-bar-size: 0px !important;
+html {
+  scrollbar-gutter: stable;
+  color-scheme: dark;
 }
+
+body {
+  background-color: #090a0f;
+  color: #f1f5f9;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Glassmorphic sidebar and header */
+#nd-sidebar {
+  background: rgba(9, 10, 15, 0.92) !important;
+  backdrop-filter: blur(16px) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+header {
+  background: rgba(9, 10, 15, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
