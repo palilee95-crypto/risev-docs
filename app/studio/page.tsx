@@ -55,8 +55,12 @@ export default function StudioPage() {
   const [viewMode, setViewMode] = useState<'split' | 'edit' | 'preview'>('split');
 
   const getLiveUrl = (relativePath?: string) => {
-    if (!relativePath) return '/ms/docs/merchant/unboxing-stand';
-    if (relativePath === 'index.mdx') return '/ms/docs/merchant/unboxing-stand';
+    // `index.mdx` IS `/docs` — it is the tutorial index, not a page under
+    // `merchant/`. Pointing it at `merchant/unboxing-stand` sent the editor's
+    // "view live" link to a page that no longer exists.
+    if (!relativePath) return '/ms/docs';
+    if (relativePath === 'index.mdx') return '/ms/docs';
+    if (relativePath === 'index.en.mdx') return '/en/docs';
     const isEn = relativePath.endsWith('.en.mdx');
     const cleanPath = relativePath.replace('.en.mdx', '').replace('.mdx', '');
     return `/${isEn ? 'en' : 'ms'}/docs/${cleanPath}`;
