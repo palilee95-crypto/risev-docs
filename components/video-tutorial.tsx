@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Play } from 'lucide-react';
+import { TUTORIAL_VIDEOS } from '@/lib/tutorials';
 
 /**
  * A TikTok tutorial card.
@@ -10,6 +11,10 @@ import { Play } from 'lucide-react';
  * sends over WhatsApp. The previous version of this component had a `videoUrl`
  * prop that no page ever passed, so every card was a dead placeholder reading
  * "Panduan video sedia ada".
+ *
+ * The URL is resolved from `step` against `lib/tutorials.ts`, so a page only
+ * writes `step={3}` and there is no second copy of a URL to drift. An explicit
+ * `videoUrl` still wins, for a one-off.
  *
  * TikTok cannot be embedded in an iframe, so the card opens the video in a new
  * tab. That is deliberate: a fake inline player that fails to load is worse than
@@ -21,7 +26,7 @@ interface VideoTutorialProps {
   title: string;
   subtitle?: string;
   duration?: string;
-  /** The TikTok URL. When absent the card renders as "coming soon". */
+  /** Overrides the URL for this step. Normally unnecessary. */
   videoUrl?: string;
   posterUrl?: string;
 }
@@ -35,11 +40,12 @@ export function VideoTutorial({
   posterUrl,
 }: VideoTutorialProps) {
   const [hovered, setHovered] = useState(false);
-  const available = Boolean(videoUrl);
+  const resolvedUrl = videoUrl ?? (step ? TUTORIAL_VIDEOS[step] : undefined);
+  const available = Boolean(resolvedUrl);
 
   const open = () => {
-    if (!videoUrl) return;
-    window.open(videoUrl, '_blank', 'noopener,noreferrer');
+    if (!resolvedUrl) return;
+    window.open(resolvedUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (

@@ -17,9 +17,9 @@ export default async function Page({
 }) {
   const { lang, slug = [] } = await params;
   const currentLang = lang === 'en' ? 'en' : 'ms';
-  if (!slug || slug.length === 0) {
-    redirect(`/${currentLang}/docs/merchant/unboxing-stand`);
-  }
+  // `/docs` with no slug IS the tutorial index (`content/docs/index.mdx`), not a
+  // redirect. This used to bounce to `merchant/unboxing-stand`, which meant the
+  // index page never rendered — the page support sends was unreachable.
   const page = source.getPage(slug, currentLang);
   if (!page) notFound();
 
