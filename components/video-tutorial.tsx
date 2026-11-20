@@ -1,21 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play, ExternalLink } from 'lucide-react';
+import { ExternalLink, Maximize2, Minimize2 } from 'lucide-react';
 import { TUTORIALS, tiktokEmbedUrl } from '@/lib/tutorials';
 
 /**
- * A TikTok tutorial card that plays inline.
+ * A TikTok tutorial card that previews and plays the video inline.
  *
- * The previous version only linked out to TikTok, which meant a merchant
- * watching a guide had to leave the help centre and come back. TikTok's official
- * `player/v1` embed works in an iframe, so the video now plays here.
+ * The preview is the TikTok player itself, not a separate thumbnail: TikTok
+ * serves a WAF challenge to the video page, so there is no `og:image` or
+ * `thumbnail_url` to fetch server-side. The player renders the video's cover
+ * frame with its own play button, which is a real preview rather than a
+ * stand-in image that could drift from the video.
  *
- * The iframe is only mounted once the card is clicked. Eight TikTok players
- * loading on page load would be several megabytes of third-party JS for videos
- * most visitors never watch.
+ * The iframe is `loading="lazy"`, so a page with eight cards only fetches the
+ * ones the visitor actually scrolls to.
  *
- * `locale` drives the label: this component is shared by the English and Malay
+ * `locale` drives the labels: this component is shared by the English and Malay
  * pages, and it used to say "Tonton di TikTok" on both.
  */
 interface VideoTutorialProps {
@@ -40,18 +41,66 @@ export function VideoTutorial({
   videoUrl,
   locale = 'en',
 }: VideoTutorialProps) {
-  const [playing, setPlaying] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const tutorial = step ? TUTORIALS[step] : undefined;
   const resolvedId = videoId ?? tutorial?.videoId;
   const resolvedUrl = videoUrl ?? tutorial?.url;
-  const available = Boolean(resolvedId);
 
   const t = (en: string, ms: string) => (locale === 'ms' ? ms : en);
 
-  if (playing && resolvedId) {
+  // Narrow on the id itself, not on a separate boolean: `available` does not
+  // tell TypeScript that `resolvedId` is defined.
+  if (!resolvedId) {
     return (
-      <div className="my-4 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-[#050505]">
-        <div className="relative mx-auto aspect-[9/16] max-h-[560px] w-full max-w-[315px]">
+      <div className="my-4 flex items-start gap-4 rounded-2xl border border-[#F1F5F9] bg-[#F8FAFC] p-4">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-[#E2E8F0]">
+          <span className="text-[11px] font-bold text-[#94A3B8]">
+            {step ? `#${step}` : '—'}
+          </span>
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[15px] font-extrabold leading-snug text-[#050505]">{title}</h3>
+          {subtitle ? (
+            <p className="mt-1 text-[12.5px] leading-relaxed text-[#64748B]">{subtitle}</p>
+          ) : null}
+          <span className="mt-2 inline-flex text-[11.5px] font-bold text-[#94A3B8]">
+            {t('Video not available yet', 'Video belum tersedia')}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="my-4 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white transition-shadow hover:shadow-md">
+      {/* Header */}
+      <div className="flex items-start gap-3 px-4 pt-4">
+        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#050505] text-[11px] font-extrabold text-white">
+          {step}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-[15px] font-extrabold leading-snug text-[#050505]">{title}</h3>
+            {duration ? (
+              <span className="shrink-0 rounded-full bg-[#F1F5F9] px-2 py-0.5 text-[10px] font-bold text-[#64748B]">
+                {duration}
+              </span>
+            ) : null}
+          </div>
+          {subtitle ? (
+            <p className="mt-1 text-[12.5px] leading-relaxed text-[#64748B]">{subtitle}</p>
+          ) : null}
+        </div>
+      </div>
+
+      {/* The player IS the preview: it renders the cover frame with a play
+          button. Lazy so eight cards do not fetch eight players on load. */}
+      <div
+        className={`relative mx-auto mt-3 w-full transition-all ${
+          expanded ? 'max-w-[360px]' : 'max-w-[220px]'
+        }`}
+      >
+        <div className="relative aspect-[9/16] w-full overflow-hidden rounded-xl bg-[#050505]">
           <iframe
             src={tiktokEmbedUrl(resolvedId)}
             title={title}
@@ -61,86 +110,30 @@ export function VideoTutorial({
             loading="lazy"
           />
         </div>
-        <div className="flex items-center justify-between gap-2 border-t border-white/10 px-4 py-2.5">
-          <span className="text-[11.5px] font-semibold text-white/70">
-            {t('Now playing', 'Sedang dimainkan')}
-          </span>
-          <div className="flex items-center gap-3">
-            {resolvedUrl ? (
-              <a
-                href={resolvedUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[11.5px] font-bold text-[#FFC700] hover:underline"
-              >
-                {t('Open in TikTok', 'Buka di TikTok')}
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            ) : null}
-            <button
-              type="button"
-              onClick={() => setPlaying(false)}
-              className="text-[11.5px] font-semibold text-white/60 hover:text-white"
-            >
-              {t('Close', 'Tutup')}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={() => available && setPlaying(true)}
-      disabled={!available}
-      aria-label={available ? `${t('Play', 'Main')}: ${title}` : `${title} — ${t('video not available', 'video belum tersedia')}`}
-      className={`group my-4 flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all ${
-        available
-          ? 'cursor-pointer border-[#E2E8F0] bg-white hover:border-[#FFC700] hover:shadow-md'
-          : 'cursor-default border-[#F1F5F9] bg-[#F8FAFC]'
-      }`}
-    >
-      {/* Thumbnail / play affordance */}
-      <div
-        className={`relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl ${
-          available ? 'bg-[#FFC700]' : 'bg-[#E2E8F0]'
-        }`}
-      >
-        <Play
-          className={`h-6 w-6 ${available ? 'fill-[#050505] text-[#050505]' : 'text-[#94A3B8]'} transition-transform group-hover:scale-110`}
-        />
-        {step ? (
-          <span className="absolute -left-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#050505] text-[10px] font-extrabold text-white">
-            {step}
-          </span>
-        ) : null}
       </div>
 
-      {/* Copy */}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="text-[15px] font-extrabold leading-snug text-[#050505]">{title}</h3>
-          {duration ? (
-            <span className="shrink-0 rounded-full bg-[#F1F5F9] px-2 py-0.5 text-[10px] font-bold text-[#64748B]">
-              {duration}
-            </span>
-          ) : null}
-        </div>
-        {subtitle ? (
-          <p className="mt-1 text-[12.5px] leading-relaxed text-[#64748B]">{subtitle}</p>
-        ) : null}
-        <span
-          className={`mt-2 inline-flex items-center gap-1 text-[11.5px] font-bold ${
-            available ? 'text-[#B45309]' : 'text-[#94A3B8]'
-          }`}
+      {/* Footer */}
+      <div className="flex items-center justify-between gap-2 px-4 py-3">
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="inline-flex items-center gap-1.5 text-[11.5px] font-bold text-[#64748B] hover:text-[#050505]"
         >
-          {available
-            ? t('Play video →', 'Main video →')
-            : t('Video not available yet', 'Video belum tersedia')}
-        </span>
+          {expanded ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+          {expanded ? t('Smaller', 'Kecilkan') : t('Larger', 'Besarkan')}
+        </button>
+        {resolvedUrl ? (
+          <a
+            href={resolvedUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[11.5px] font-bold text-[#B45309] hover:underline"
+          >
+            {t('Open in TikTok', 'Buka di TikTok')}
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        ) : null}
       </div>
-    </button>
+    </div>
   );
 }
