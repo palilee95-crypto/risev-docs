@@ -2,33 +2,49 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
-:root, .dark {
-  --color-fd-background: #090a0f;
-  --color-fd-foreground: #f8fafc;
-  --color-fd-muted: #11141c;
-  --color-fd-muted-foreground: #94a3b8;
-  --color-fd-popover: #0f131a;
-  --color-fd-popover-foreground: #f8fafc;
-  --color-fd-card: #0f131a;
-  --color-fd-card-foreground: #f8fafc;
-  --color-fd-border: rgba(255, 255, 255, 0.08);
-  --color-fd-primary: #06b6d4;
-  --color-fd-primary-foreground: #ffffff;
-  --color-fd-secondary: #161b26;
-  --color-fd-secondary-foreground: #f8fafc;
-  --color-fd-accent: #1e293b;
-  --color-fd-accent-foreground: #38bdf8;
-  --color-fd-ring: #06b6d4;
+/*
+ * Risev Help Centre theme.
+ *
+ * Matches the merchant app's Rule of Three — white surface, near-black ink,
+ * amber accent — instead of the dark cyan developer-docs default this site
+ * shipped with. A merchant arriving from the app should recognise the place.
+ *
+ * Tokens mirror `theme/index.ts` in the app repo:
+ *   surface  #FFFFFF   ink  #050505 / #0F172A   accent  #FFC700
+ *   muted    #64748B   border #E2E8F0           purple  #5C3BCC
+ *
+ * Type is PlusJakartaSans, loaded in `app/layout.tsx`.
+ */
+
+:root {
+  --color-fd-background: #ffffff;
+  --color-fd-foreground: #0f172a;
+  --color-fd-muted: #f8fafc;
+  --color-fd-muted-foreground: #64748b;
+  --color-fd-popover: #ffffff;
+  --color-fd-popover-foreground: #0f172a;
+  --color-fd-card: #ffffff;
+  --color-fd-card-foreground: #0f172a;
+  --color-fd-border: #e2e8f0;
+  --color-fd-primary: #ffc700;
+  --color-fd-primary-foreground: #050505;
+  --color-fd-secondary: #f1f5f9;
+  --color-fd-secondary-foreground: #0f172a;
+  --color-fd-accent: #fffbea;
+  --color-fd-accent-foreground: #b45309;
+  --color-fd-ring: #ffc700;
 }
 
+/* The app is light-only; forcing dark here was the main mismatch. */
 html {
   scrollbar-gutter: stable;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  background-color: #090a0f;
-  color: #f1f5f9;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Custom scrollbar */
@@ -36,27 +52,65 @@ body {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.12);
   border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(15, 23, 42, 0.22);
 }
 
-/* Glassmorphic sidebar and header */
+/* Sidebar and header: white with a hairline, matching the app's cards. */
 #nd-sidebar {
-  background: rgba(9, 10, 15, 0.92) !important;
-  backdrop-filter: blur(16px) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
 }
 
 header {
-  background: rgba(9, 10, 15, 0.85) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
   backdrop-filter: blur(16px) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
 }
 
+/* Amber is the accent, so a selected nav item reads as "current", not "link". */
+#nd-sidebar a[data-active='true'] {
+  background: #fffbea !important;
+  color: #0f172a !important;
+  font-weight: 600;
+}
+
+/* Prose: the app uses generous line-height and near-black body text. */
+.prose {
+  --tw-prose-body: #334155;
+  --tw-prose-headings: #050505;
+  --tw-prose-links: #b45309;
+  --tw-prose-bold: #050505;
+  --tw-prose-counters: #64748b;
+  --tw-prose-bullets: #cbd5e1;
+  --tw-prose-hr: #e2e8f0;
+  --tw-prose-quotes: #0f172a;
+  --tw-prose-quote-borders: #ffc700;
+  --tw-prose-code: #0f172a;
+  --tw-prose-th-borders: #e2e8f0;
+  --tw-prose-td-borders: #f1f5f9;
+}
+
+/* A callout should look like the app's amber info panel, not a blue box. */
+.prose blockquote {
+  border-left-color: #ffc700;
+  background: #fffbea;
+  border-radius: 0 12px 12px 0;
+  padding: 12px 16px;
+  font-style: normal;
+}
+
+.prose blockquote p::before,
+.prose blockquote p::after {
+  content: none;
+}

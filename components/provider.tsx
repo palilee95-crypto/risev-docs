@@ -28,8 +28,10 @@ export function CustomRootProvider({
   return (
     <BaseRootProvider
       theme={{
-        defaultTheme: 'dark',
-        forcedTheme: 'dark',
+        // The merchant app is light-only. Forcing dark here made the help centre
+        // look like a different product.
+        defaultTheme: 'light',
+        forcedTheme: 'light',
       }}
       i18n={{
         locale: currentLocale,

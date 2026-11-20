@@ -3,10 +3,6 @@
   "pages": [
     "index",
     "---Panduan Peniaga---",
-    "merchant",
-    "---Panduan Pelanggan---",
-    "customer/getting-started",
-    "customer/my-cards",
-    "customer/vouchers"
+    "merchant"
   ]
 }

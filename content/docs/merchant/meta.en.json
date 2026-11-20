@@ -1,28 +1,8 @@
 {
-  "title": "Merchant Guides",
+  "title": "Merchant Guide",
   "pages": [
-    "---Getting Started---",
-    "unboxing-stand",
-    "register",
-    "card-design",
-    "google-review",
-    "---Counter Operations---",
-    "give-stamps",
-    "give-manual",
-    "redeem-voucher",
-    "---Marketing & Retention---",
-    "customers",
-    "marketing",
-    "rewards",
-    "---Management & Branches---",
-    "dashboard",
-    "analytics",
-    "staff",
-    "branches",
-    "profile",
-    "subscription",
-    "---FAQ & Counter SOP---",
-    "counter-cheatsheet",
-    "troubleshooting"
+    "start-here",
+    "counter",
+    "catalogue"
   ]
 }

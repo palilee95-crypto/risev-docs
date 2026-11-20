@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
 export default function HomePage() {
-  redirect('/ms/docs/merchant/unboxing-stand');
+  // The landing page is the tutorial index — that is what support sends.
+  redirect('/ms/docs');
 }
-

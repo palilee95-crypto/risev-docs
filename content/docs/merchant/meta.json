@@ -1,28 +1,8 @@
 {
   "title": "Panduan Peniaga",
   "pages": [
-    "---Mula Di Sini---",
-    "unboxing-stand",
-    "register",
-    "card-design",
-    "google-review",
-    "---Operasi Kaunter---",
-    "give-stamps",
-    "give-manual",
-    "redeem-voucher",
-    "---Pemasaran & Retensi---",
-    "customers",
-    "marketing",
-    "rewards",
-    "---Pengurusan & Cawangan---",
-    "dashboard",
-    "analytics",
-    "staff",
-    "branches",
-    "profile",
-    "subscription",
-    "---Soalan Lazim & SOP---",
-    "counter-cheatsheet",
-    "troubleshooting"
+    "start-here",
+    "counter",
+    "catalogue"
   ]
 }

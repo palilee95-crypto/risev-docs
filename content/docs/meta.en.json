@@ -1,12 +1,8 @@
 {
-  "title": "Risev Help Center",
+  "title": "Risev Help Centre",
   "pages": [
     "index",
-    "---Merchant Guides---",
-    "merchant",
-    "---Customer Guides---",
-    "customer/getting-started",
-    "customer/my-cards",
-    "customer/vouchers"
+    "---Merchant Guide---",
+    "merchant"
   ]
 }
