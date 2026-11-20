@@ -6,27 +6,73 @@
  * to say `step={3}` and the right video appears; there is no second copy of a
  * URL to drift out of sync.
  *
- * TikTok cannot be embedded in an iframe, so these open in a new tab.
+ * `videoId` is the numeric TikTok video id, resolved from the short `vt.tiktok`
+ * link. The embed player needs the id, not the short link:
+ *   https://vt.tiktok.com/ZSp4c6cJf/  ->  .../video/7706783583565876500
+ *
+ * `url` stays the short link because that is what support sends and what a
+ * merchant recognises.
  */
-export const TUTORIAL_VIDEOS: Record<number, string> = {
-  1: 'https://vt.tiktok.com/ZSp4c6cJf/',
-  2: 'https://vt.tiktok.com/ZSp4c3JQh/',
-  3: 'https://vt.tiktok.com/ZSp43GB6J/',
-  4: 'https://vt.tiktok.com/ZSp4TjAL3/',
-  5: 'https://vt.tiktok.com/ZSp4TQcmY/',
-  6: 'https://vt.tiktok.com/ZSp4wbWjM/',
-  7: 'https://vt.tiktok.com/ZSp4K6vBe/',
-  8: 'https://vt.tiktok.com/ZSpqrhcDJ/',
+export interface Tutorial {
+  step: number;
+  videoId: string;
+  url: string;
+  /** English title. The Malay title lives in the .ms.mdx content. */
+  title: string;
+}
+
+export const TUTORIALS: Record<number, Tutorial> = {
+  1: {
+    step: 1,
+    videoId: '7706783583565876500',
+    url: 'https://vt.tiktok.com/ZSp4c6cJf/',
+    title: 'Setting Up Your Stand',
+  },
+  2: {
+    step: 2,
+    videoId: '7708026570186706196',
+    url: 'https://vt.tiktok.com/ZSp4c3JQh/',
+    title: 'How Customers Tap & How You Approve',
+  },
+  3: {
+    step: 3,
+    videoId: '7708028144741076244',
+    url: 'https://vt.tiktok.com/ZSp43GB6J/',
+    title: 'Custom Design for Your Brand',
+  },
+  4: {
+    step: 4,
+    videoId: '7708030157172346132',
+    url: 'https://vt.tiktok.com/ZSp4TjAL3/',
+    title: 'Setting Up Customer Rewards',
+  },
+  5: {
+    step: 5,
+    videoId: '7708031424615468309',
+    url: 'https://vt.tiktok.com/ZSp4TQcmY/',
+    title: 'Setting Up the Points System',
+  },
+  6: {
+    step: 6,
+    videoId: '7708033420831558933',
+    url: 'https://vt.tiktok.com/ZSp4wbWjM/',
+    title: 'How Customers Redeem Points & Vouchers',
+  },
+  7: {
+    step: 7,
+    videoId: '7708035077120347412',
+    url: 'https://vt.tiktok.com/ZSp4K6vBe/',
+    title: 'Setting Up Smart Google Review',
+  },
+  8: {
+    step: 8,
+    videoId: '7708036169790983445',
+    url: 'https://vt.tiktok.com/ZSpqrhcDJ/',
+    title: 'Setting Up Your Product & Service Catalogue',
+  },
 };
 
-/** Titles, so the index and the section pages cannot disagree either. */
-export const TUTORIAL_TITLES: Record<number, string> = {
-  1: 'Setup Stand Kali Pertama',
-  2: 'Cara Customer Tap & Cara Approve',
-  3: 'Custom Design Ikut Brand Sendiri',
-  4: 'Setup Reward untuk Customer',
-  5: 'Setup Sistem Point Reward',
-  6: 'Cara Customer Tebus Point & Voucher',
-  7: 'Setup Smart Google Review',
-  8: 'Setup Katalog Produk & Servis',
-};
+/** The official TikTok embed player. `autoplay=0` so it does not start on load. */
+export function tiktokEmbedUrl(videoId: string): string {
+  return `https://www.tiktok.com/player/v1/${videoId}?autoplay=0&loop=0`;
+}

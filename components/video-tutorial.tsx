@@ -1,24 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Play } from 'lucide-react';
-import { TUTORIAL_VIDEOS } from '@/lib/tutorials';
+import { Play, ExternalLink } from 'lucide-react';
+import { TUTORIALS, tiktokEmbedUrl } from '@/lib/tutorials';
 
 /**
- * A TikTok tutorial card.
+ * A TikTok tutorial card that plays inline.
  *
- * This is the primary way merchants learn Risev — the videos are what support
- * sends over WhatsApp. The previous version of this component had a `videoUrl`
- * prop that no page ever passed, so every card was a dead placeholder reading
- * "Panduan video sedia ada".
+ * The previous version only linked out to TikTok, which meant a merchant
+ * watching a guide had to leave the help centre and come back. TikTok's official
+ * `player/v1` embed works in an iframe, so the video now plays here.
  *
- * The URL is resolved from `step` against `lib/tutorials.ts`, so a page only
- * writes `step={3}` and there is no second copy of a URL to drift. An explicit
- * `videoUrl` still wins, for a one-off.
+ * The iframe is only mounted once the card is clicked. Eight TikTok players
+ * loading on page load would be several megabytes of third-party JS for videos
+ * most visitors never watch.
  *
- * TikTok cannot be embedded in an iframe, so the card opens the video in a new
- * tab. That is deliberate: a fake inline player that fails to load is worse than
- * an honest link.
+ * `locale` drives the label: this component is shared by the English and Malay
+ * pages, and it used to say "Tonton di TikTok" on both.
  */
 interface VideoTutorialProps {
   /** 1-based position, matching the numbering support sends. */
@@ -26,9 +24,11 @@ interface VideoTutorialProps {
   title: string;
   subtitle?: string;
   duration?: string;
-  /** Overrides the URL for this step. Normally unnecessary. */
+  /** Overrides the video for this step. Normally unnecessary. */
+  videoId?: string;
+  /** Overrides the outbound link. Normally unnecessary. */
   videoUrl?: string;
-  posterUrl?: string;
+  locale?: 'en' | 'ms';
 }
 
 export function VideoTutorial({
@@ -36,26 +36,66 @@ export function VideoTutorial({
   title,
   subtitle,
   duration,
+  videoId,
   videoUrl,
-  posterUrl,
+  locale = 'en',
 }: VideoTutorialProps) {
-  const [hovered, setHovered] = useState(false);
-  const resolvedUrl = videoUrl ?? (step ? TUTORIAL_VIDEOS[step] : undefined);
-  const available = Boolean(resolvedUrl);
+  const [playing, setPlaying] = useState(false);
+  const tutorial = step ? TUTORIALS[step] : undefined;
+  const resolvedId = videoId ?? tutorial?.videoId;
+  const resolvedUrl = videoUrl ?? tutorial?.url;
+  const available = Boolean(resolvedId);
 
-  const open = () => {
-    if (!resolvedUrl) return;
-    window.open(resolvedUrl, '_blank', 'noopener,noreferrer');
-  };
+  const t = (en: string, ms: string) => (locale === 'ms' ? ms : en);
+
+  if (playing && resolvedId) {
+    return (
+      <div className="my-4 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-[#050505]">
+        <div className="relative mx-auto aspect-[9/16] max-h-[560px] w-full max-w-[315px]">
+          <iframe
+            src={tiktokEmbedUrl(resolvedId)}
+            title={title}
+            className="absolute inset-0 h-full w-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+          />
+        </div>
+        <div className="flex items-center justify-between gap-2 border-t border-white/10 px-4 py-2.5">
+          <span className="text-[11.5px] font-semibold text-white/70">
+            {t('Now playing', 'Sedang dimainkan')}
+          </span>
+          <div className="flex items-center gap-3">
+            {resolvedUrl ? (
+              <a
+                href={resolvedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[11.5px] font-bold text-[#FFC700] hover:underline"
+              >
+                {t('Open in TikTok', 'Buka di TikTok')}
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => setPlaying(false)}
+              className="text-[11.5px] font-semibold text-white/60 hover:text-white"
+            >
+              {t('Close', 'Tutup')}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <button
       type="button"
-      onClick={open}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onClick={() => available && setPlaying(true)}
       disabled={!available}
-      aria-label={available ? `Tonton: ${title}` : `${title} — video belum tersedia`}
+      aria-label={available ? `${t('Play', 'Main')}: ${title}` : `${title} — ${t('video not available', 'video belum tersedia')}`}
       className={`group my-4 flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all ${
         available
           ? 'cursor-pointer border-[#E2E8F0] bg-white hover:border-[#FFC700] hover:shadow-md'
@@ -68,12 +108,8 @@ export function VideoTutorial({
           available ? 'bg-[#FFC700]' : 'bg-[#E2E8F0]'
         }`}
       >
-        {posterUrl ? (
-          <img src={posterUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        ) : null}
         <Play
-          className={`h-6 w-6 ${available ? 'fill-[#050505] text-[#050505]' : 'text-[#94A3B8]'}`}
-          style={{ transform: hovered && available ? 'scale(1.15)' : 'scale(1)', transition: 'transform 200ms' }}
+          className={`h-6 w-6 ${available ? 'fill-[#050505] text-[#050505]' : 'text-[#94A3B8]'} transition-transform group-hover:scale-110`}
         />
         {step ? (
           <span className="absolute -left-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#050505] text-[10px] font-extrabold text-white">
@@ -100,7 +136,9 @@ export function VideoTutorial({
             available ? 'text-[#B45309]' : 'text-[#94A3B8]'
           }`}
         >
-          {available ? 'Tonton di TikTok →' : 'Video belum tersedia'}
+          {available
+            ? t('Play video →', 'Main video →')
+            : t('Video not available yet', 'Video belum tersedia')}
         </span>
       </div>
     </button>

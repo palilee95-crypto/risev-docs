@@ -31,9 +31,12 @@ export default async function Page({
       <DocsDescription className="mb-4">{page.data.description}</DocsDescription>
       <DocsBody>
         <MDX
-          components={getMDXComponents({
-            a: createRelativeLink(source, page),
-          })}
+          components={getMDXComponents(
+            {
+              a: createRelativeLink(source, page),
+            },
+            currentLang === 'ms' ? 'ms' : 'en'
+          )}
         />
       </DocsBody>
     </DocsPage>
