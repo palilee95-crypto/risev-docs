@@ -1,6 +1,13 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 
-export function baseOptions(): BaseLayoutProps {
+/**
+ * The nav is shared by both locales, so the label has to come from the locale
+ * rather than being hardcoded. It used to say "Pusat Bantuan" on the English
+ * pages too.
+ */
+export function baseOptions(locale: string = 'en'): BaseLayoutProps {
+  const label = locale === 'ms' ? 'Pusat Bantuan' : 'Help Centre';
+
   return {
     nav: {
       title: (
@@ -18,7 +25,7 @@ export function baseOptions(): BaseLayoutProps {
               color: '#050505',
             }}
           >
-            Pusat Bantuan
+            {label}
           </span>
         </div>
       ),

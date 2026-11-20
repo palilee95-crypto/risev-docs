@@ -10,14 +10,14 @@ export default async function DocsLangLayout({
   children: React.ReactNode;
 }) {
   const { lang } = await params;
-  const currentLang = lang === 'en' ? 'en' : 'ms';
+  const currentLang = lang === 'ms' ? 'ms' : 'en';
   const tree = source.getPageTree(currentLang);
 
   return (
     <DocsLayout 
       tree={tree} 
       i18n={true}
-      {...baseOptions()}
+      {...baseOptions(currentLang)}
     >
       {children}
     </DocsLayout>

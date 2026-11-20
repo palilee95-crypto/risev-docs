@@ -58,12 +58,14 @@ export default function StudioPage() {
     // `index.mdx` IS `/docs` — it is the tutorial index, not a page under
     // `merchant/`. Pointing it at `merchant/unboxing-stand` sent the editor's
     // "view live" link to a page that no longer exists.
-    if (!relativePath) return '/ms/docs';
-    if (relativePath === 'index.mdx') return '/ms/docs';
-    if (relativePath === 'index.en.mdx') return '/en/docs';
-    const isEn = relativePath.endsWith('.en.mdx');
-    const cleanPath = relativePath.replace('.en.mdx', '').replace('.mdx', '');
-    return `/${isEn ? 'en' : 'ms'}/docs/${cleanPath}`;
+    //
+    // English is the default locale, so it has no URL prefix; Malay is `/ms`.
+    if (!relativePath) return '/docs';
+    if (relativePath === 'index.mdx') return '/docs';
+    if (relativePath === 'index.ms.mdx') return '/ms/docs';
+    const isMs = relativePath.endsWith('.ms.mdx');
+    const cleanPath = relativePath.replace('.ms.mdx', '').replace('.mdx', '');
+    return `/${isMs ? 'ms' : 'en'}/docs/${cleanPath}`;
   };
   
   // Media Upload State

@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 
 export default function HomePage() {
-  // The landing page is the tutorial index — that is what support sends.
-  redirect('/ms/docs');
+  // English is the default locale, so `/docs` is the tutorial index with no
+  // prefix. Malay lives at `/ms/docs`.
+  redirect('/docs');
 }

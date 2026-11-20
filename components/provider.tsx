@@ -11,17 +11,17 @@ export function CustomRootProvider({
   const pathname = usePathname();
   const router = useRouter();
 
-  // Extract current locale from pathname (first segment)
+  // Extract current locale from pathname (first segment). English is the
+  // default and has NO prefix, so an unprefixed path is English.
   const segments = pathname.split('/').filter(Boolean);
-  const currentLocale = segments[0] === 'en' ? 'en' : 'ms';
+  const currentLocale = segments[0] === 'ms' ? 'ms' : 'en';
 
   const handleLocaleChange = (newLocale: string) => {
     const pathSegments = pathname.split('/').filter(Boolean);
-    if (pathSegments.length > 0 && (pathSegments[0] === 'ms' || pathSegments[0] === 'en')) {
-      pathSegments[0] = newLocale;
-    } else {
-      pathSegments.unshift(newLocale);
-    }
+    const hasLocalePrefix = pathSegments[0] === 'ms' || pathSegments[0] === 'en';
+    if (hasLocalePrefix) pathSegments.shift();
+    // English is served unprefixed; only Malay gets a segment.
+    if (newLocale !== 'en') pathSegments.unshift(newLocale);
     router.push(`/${pathSegments.join('/')}`);
   };
 
@@ -36,8 +36,8 @@ export function CustomRootProvider({
       i18n={{
         locale: currentLocale,
         locales: [
-          { name: '🇲🇾 Bahasa Melayu', locale: 'ms' },
           { name: '🇬🇧 English', locale: 'en' },
+          { name: '🇲🇾 Bahasa Melayu', locale: 'ms' },
         ],
         onLocaleChange: handleLocaleChange,
       }}

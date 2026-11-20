@@ -12,7 +12,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="ms" className={plusJakarta.variable} suppressHydrationWarning>
+    <html lang="en" className={plusJakarta.variable} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen bg-white text-[#0f172a] antialiased selection:bg-[#FFC700]/30 selection:text-[#050505]">
         <CustomRootProvider>
           {children}
