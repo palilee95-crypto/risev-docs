@@ -10,13 +10,24 @@ const plusJakarta = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta',
 });
 
+export const metadata = {
+  title: 'Risev Help Centre',
+  description: 'Short video guides for your Risev business.',
+};
+
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={plusJakarta.variable} suppressHydrationWarning>
-      <body className="flex flex-col min-h-screen bg-white text-[#0f172a] antialiased selection:bg-[#FFC700]/30 selection:text-[#050505]">
-        <CustomRootProvider>
-          {children}
-        </CustomRootProvider>
+      <body
+        style={{
+          margin: 0,
+          background: '#F7F8FA',
+          color: '#050505',
+          fontFamily: 'var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif',
+          WebkitFontSmoothing: 'antialiased',
+        }}
+      >
+        <CustomRootProvider>{children}</CustomRootProvider>
       </body>
     </html>
   );
