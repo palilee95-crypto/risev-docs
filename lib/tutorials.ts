@@ -55,13 +55,13 @@ export const TUTORIALS: Tutorial[] = [
     steps: {
       en: [
         { title: 'Unbox the stand', body: 'Take the stand and the guide card out of the box.' },
-        { title: 'Tap or scan', body: 'Tap your phone on the stand, or scan the QR code printed on it.' },
-        { title: 'Press Pair Stand', body: 'Log in as a merchant, then confirm the pairing.' },
+        { title: 'Tap your phone', body: 'Tap your phone on the stand. No app needed.' },
+        { title: 'Create an account', body: 'Sign up, then confirm the pairing to finish setup.' },
       ],
       ms: [
         { title: 'Buka bungkusan', body: 'Ambil stand dan kad panduan dari dalam kotak.' },
-        { title: 'Tap atau imbas', body: 'Tap telefon pada stand, atau imbas kod QR yang tercetak padanya.' },
-        { title: 'Tekan Pair Stand', body: 'Log masuk sebagai peniaga, kemudian sahkan pairing.' },
+        { title: 'Tap telefon', body: 'Tap telefon anda pada stand. Tidak perlu app.' },
+        { title: 'Cipta akaun', body: 'Daftar, kemudian sahkan pairing untuk selesai setup.' },
       ],
     },
   },
